@@ -1,24 +1,27 @@
-// Lấy thẻ div container từ HTML
-const container = document.getElementById('viewer-container');
+import { IfcViewerAPI } from "https://cdn.jsdelivr.net/npm/web-ifc-viewer@1.0.214/dist/IFCjs-bundle.js";
 
-// Khởi tạo trình xem 3D
-const viewer = new WEBIFC.IfcViewer(container);
+// Lấy thẻ div từ HTML
+const container = document.getElementById("viewer-container");
 
-// Thiết lập đường dẫn đến các file wasm của thư viện
-// Quan trọng: Đường dẫn này phải đúng
-viewer.IFC.setWasmPath("https://unpkg.com/web-ifc@0.0.54/IFC/");
+// Khởi tạo trình xem
+const viewer = new IfcViewerAPI({
+    container,
+    backgroundColor: new Color(0xffffff), // Đặt màu nền là màu trắng
+});
 
-// Đường dẫn đến file IFC của bạn đã được host trên GitHub
-const ifcModelUrl = './V1.ifc'; // Thay 'your-model.ifc' bằng tên file của bạn
+// Tạo các lưới trục
+viewer.grid.setGrid();
+viewer.axes.setAxes();
 
-// Hàm để tải và hiển thị mô hình
-async function loadIfcModel() {
-    try {
-        await viewer.IFC.loadIfcUrl(ifcModelUrl);
-    } catch (error) {
-        console.error('Không thể tải mô hình IFC:', error);
-    }
+// Hàm tải mô hình IFC
+async function loadIfc(url) {
+    // Tải mô hình và thêm vào cảnh
+    const model = await viewer.IFC.loadIfcUrl(url);
+
+    // Thêm đổ bóng cho mô hình
+    viewer.shadowDropper.renderShadow(model.modelID);
 }
 
-// Gọi hàm để tải mô hình
-loadIfcModel();
+// Gọi hàm để tải mô hình của bạn
+// Hãy chắc chắn tên file 'V1.ifc' là chính xác
+loadIfc('./V1.ifc');
